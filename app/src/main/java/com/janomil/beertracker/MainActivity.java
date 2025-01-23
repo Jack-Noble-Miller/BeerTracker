@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         sp = getSharedPreferences("userID", Context.MODE_PRIVATE);
         authDeviceToDB();
 
+
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         //tv1 = (TextView)findViewById(R.id.textView);
@@ -228,6 +229,35 @@ public class MainActivity extends AppCompatActivity {
 
     public int getUserID(){
         return userID.get();
+    }
+
+    private void getGlobalSettings() {
+
+        new Thread(() -> {
+            try {
+                try (Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+                    String queryStr = "SELECT * FROM GlobalSettings";
+                    try (PreparedStatement stmt = con.prepareStatement(queryStr)) {
+
+                        try (ResultSet rs = stmt.executeQuery()) {
+                            while(rs.next()){
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putBoolean("LB_RankByUnits", rs.getBoolean("LB_RankByUnits"));
+                                editor.putInt("APP_Version", rs.getInt("APP_Version"));
+                                editor.putBoolean("APP_PromptToUpdate", rs.getBoolean("APP_PromptToUpdate"));
+                                editor.putInt("HI_ShowLastNum", rs.getInt("LB_RankByUnits"));
+                                editor.putBoolean("OV_RankByUnits", rs.getBoolean("OV_RankByUnits"));
+                                editor.apply();
+                            }
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                Log.e("ERROR", "SQL Exception: " + e.getMessage(), e);
+            } catch (Exception e) {
+                Log.e("ERROR", "Unexpected Exception: " + e.getMessage(), e);
+            }
+        }).start();
     }
 
 
