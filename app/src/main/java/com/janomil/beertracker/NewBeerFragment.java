@@ -58,6 +58,7 @@ public class NewBeerFragment extends Fragment {
     }
 
     private void onSubmitButtonClick(View v) {
+        ((MainActivity) requireActivity()).startLoad();
         MainActivity mainActivity = (MainActivity) getActivity();
         String beerNameStr = String.valueOf(beerName.getText());
         String beerHexStr = String.valueOf(beerHex.getText());
@@ -103,6 +104,7 @@ public class NewBeerFragment extends Fragment {
                 mainActivity.showToast("Drink name cannot be empty");
             }
         }
+        ((MainActivity) requireActivity()).endLoad();
     }
 
     @Override

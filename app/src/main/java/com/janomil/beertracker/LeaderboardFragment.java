@@ -126,6 +126,7 @@ public class LeaderboardFragment extends Fragment {
     }
 
     public void refreshLeaderboard(){
+        ((MainActivity) requireActivity()).startLoad();
         clearLeaderboard();
         String selectedRbText = "Y";
         String beerTypeStr = dropdown.getSelectedItem().toString();
@@ -237,7 +238,9 @@ public class LeaderboardFragment extends Fragment {
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage());
             }
+            ((MainActivity) requireActivity()).endLoad();
         }).start();
+
     }
 
     private void clearLeaderboard(){

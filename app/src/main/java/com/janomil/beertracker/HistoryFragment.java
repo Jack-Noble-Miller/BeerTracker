@@ -54,6 +54,7 @@ public class HistoryFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
+        ((MainActivity) requireActivity()).startLoad();
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scrollView);
         LinearLayout linearLayout = (LinearLayout) scrollView.findViewById(R.id.linearLayout);
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -89,6 +90,7 @@ public class HistoryFragment extends Fragment {
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage());
             }
+            ((MainActivity) requireActivity()).endLoad();
         }).start();
 
     }

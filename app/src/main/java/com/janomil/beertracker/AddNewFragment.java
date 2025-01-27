@@ -115,6 +115,7 @@ public class AddNewFragment extends Fragment {
     }
 
     public void onSubmitButtonClick(View v) {
+        ((MainActivity) requireActivity()).startLoad();
         MainActivity mainActivity = (MainActivity) getActivity();
         String beerNameStr = String.valueOf(beerName.getText());
         String beerQuantityStr = String.valueOf(beerQuantity.getText());
@@ -183,6 +184,7 @@ public class AddNewFragment extends Fragment {
                 mainActivity.showToast("Drink name cannot be empty");
             }
         }
+        ((MainActivity) requireActivity()).endLoad();
     }
 
     public void onClickBeerList(View view){

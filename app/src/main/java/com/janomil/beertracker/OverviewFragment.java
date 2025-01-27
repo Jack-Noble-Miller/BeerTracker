@@ -83,6 +83,8 @@ public class OverviewFragment extends Fragment {
         TextView totalSpiritBrandsTextView = (TextView) getView().findViewById(R.id.NumOfSpiritsBrandsValue);
         TextView spiritsTitle = (TextView) getView().findViewById(R.id.SpiritsTitle);
 
+        ((MainActivity) requireActivity()).startLoad();
+
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
                 sp = getActivity().getSharedPreferences("userID", Context.MODE_PRIVATE);
@@ -125,9 +127,11 @@ public class OverviewFragment extends Fragment {
                     numOfIterations++;
                 }
 
+
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage());
             }
+            ((MainActivity) requireActivity()).endLoad();
         }).start();
     }
 }

@@ -55,6 +55,7 @@ public class BeerListFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
+        ((MainActivity) requireActivity()).startLoad();
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scrollView1);
         LinearLayout linearLayout = (LinearLayout) scrollView.findViewById(R.id.linearLayout1);
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -95,6 +96,7 @@ public class BeerListFragment extends Fragment {
             } catch (Exception e) {
                 Log.e("ERROR", e.getMessage());
             }
+            ((MainActivity) requireActivity()).endLoad();
         }).start();
 
     }

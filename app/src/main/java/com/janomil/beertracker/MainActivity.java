@@ -6,7 +6,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        //tv1 = (TextView)findViewById(R.id.textView);
+        ImageView imageView1 = (ImageView) findViewById(R.id.imageView);
+
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) imageView1.getLayoutParams();
+        params.bottomMargin = 125;  // Move 200 pixels down
+        imageView1.setLayoutParams(params);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new OverviewFragment())
                 .addToBackStack(null)
@@ -229,6 +237,19 @@ public class MainActivity extends AppCompatActivity {
 
     public int getUserID(){
         return userID.get();
+    }
+
+    public void startLoad(){
+        ImageView spinner = findViewById(R.id.imageView);
+        spinner.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.spin);
+        spinner.startAnimation(animation);
+    }
+
+    public void endLoad(){
+        ImageView spinner = findViewById(R.id.imageView);
+        spinner.clearAnimation();
+        spinner.setVisibility(View.INVISIBLE);
     }
 
     private void getGlobalSettings() {
