@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         debugUserIDTV = (TextView)findViewById(R.id.textView1);
         sp = getSharedPreferences("userID", Context.MODE_PRIVATE);
         authDeviceToDB();
+        getGlobalSettings();
+
 
 
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 isAuthenticated = true;
                                 showToast("Successfully authenticated with UserID: " + userID.get());
+
                             }
                         }
                     }
@@ -279,6 +282,22 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("ERROR", "Unexpected Exception: " + e.getMessage(), e);
             }
         }).start();
+    }
+
+    public void setActingUserID(int newUserID){
+        if(isAuthenticated){
+            userID.set(newUserID);
+        }
+
+    }
+
+    public int getActingUserID(){
+        return userID.get();
+    }
+
+    public int getTrueUserID(){
+        SharedPreferences sp = getSharedPreferences("userID", Context.MODE_PRIVATE);
+        return sp.getInt("userID", 0);
     }
 
 

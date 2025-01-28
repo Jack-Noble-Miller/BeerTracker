@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.sql.Connection;
@@ -58,11 +59,23 @@ public class OverviewFragment extends Fragment {
                 .commit();
     }
 
+    public void onClickAdminMode(View view){
+        frameLayout = (FrameLayout) getView().findViewById(R.id.frameLayout);
+
+        getFragmentManager().beginTransaction().replace(R.id.frameLayout, new AdminFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_overview, container, false);
+        View view = inflater.inflate(R.layout.fragment_overview, container, false);
+
+        ImageButton button = view.findViewById(R.id.imageButton2);
+        button.setOnClickListener(v -> onClickAdminMode(v));
+        return view;
     }
 
     @Override
@@ -87,10 +100,10 @@ public class OverviewFragment extends Fragment {
 
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
-                sp = getActivity().getSharedPreferences("userID", Context.MODE_PRIVATE);
                 String queryStr = "SELECT b.BeerType, COUNT(*) AS EntryCount, COUNT(DISTINCT ubl.BeerID) AS DistinctBeerCount, SUM(ubl.DrinkSizeMultiplier) AS Multiplier FROM UserBeerLink ubl JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.UserID = ? GROUP BY b.BeerType ORDER BY Multiplier DESC LIMIT 3";
                 PreparedStatement stmt = con.prepareStatement(queryStr);
-                stmt.setInt(1,sp.getInt("userID", 0));
+                int userID =((MainActivity) getActivity()).getActingUserID();
+                stmt.setInt(1,userID);
                 ResultSet rs = stmt.executeQuery();
                 int numOfIterations = 1;
                 while(rs.next()){

@@ -61,11 +61,11 @@ public class HistoryFragment extends Fragment {
 
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
-                sp = getActivity().getSharedPreferences("userID", Context.MODE_PRIVATE);
                 String queryStr = "SELECT b.BeerName, b.BeerType, b.BeerColour From UserBeerLink ubl JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.UserID = ? ORDER BY ubl.Timestamp DESC";
 
                 PreparedStatement stmt = con.prepareStatement(queryStr);
-                stmt.setInt(1,sp.getInt("userID", 0));
+                int userID =((MainActivity) getActivity()).getActingUserID();
+                stmt.setInt(1,userID);
                 ResultSet rs = stmt.executeQuery();
                 while(rs.next()){
                     String beerName = rs.getString("BeerName");

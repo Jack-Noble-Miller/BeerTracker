@@ -141,10 +141,11 @@ public class AddNewFragment extends Fragment {
 
                         if (rs.next()) {
                             // Beer exists, proceed with insertion
+                            int userID =((MainActivity) getActivity()).getActingUserID();
                             int beerID = rs.getInt("BeerID");
                             String insertQuery = "INSERT INTO UserBeerLink(UserID, BeerID, Timestamp, DrinkSizeMultiplier) VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
                             PreparedStatement insertStmt = con.prepareStatement(insertQuery);
-                            insertStmt.setInt(1, sp.getInt("userID", 0));
+                            insertStmt.setInt(1, userID);
                             insertStmt.setInt(2, beerID);
                             insertStmt.setDouble(3, beerQuantityDou);
                             insertStmt.execute();
