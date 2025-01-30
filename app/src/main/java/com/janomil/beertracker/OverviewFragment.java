@@ -72,7 +72,6 @@ public class OverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
-
         ImageButton button = view.findViewById(R.id.imageButton2);
         button.setOnClickListener(v -> onClickAdminMode(v));
         return view;
@@ -97,6 +96,29 @@ public class OverviewFragment extends Fragment {
         TextView spiritsTitle = (TextView) getView().findViewById(R.id.SpiritsTitle);
 
         ((MainActivity) requireActivity()).startLoad();
+
+        new Thread(()-> {
+            try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)) {
+                String queryStr = "SELECT UserIsAdmin FROM UserData WHERE UserID = ?";
+                PreparedStatement stmt = con.prepareStatement(queryStr);
+                int userID =((MainActivity) getActivity()).getActingUserID();
+                stmt.setInt(1,userID);
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                boolean isAdmin = rs.getBoolean("UserIsAdmin");
+                ImageButton button = view.findViewById(R.id.imageButton2);
+                if(isAdmin){
+                    button.setVisibility(View.VISIBLE);
+
+                }
+                else{
+                    button.setVisibility(View.GONE);
+                }
+            }
+            catch (Exception e){
+                Log.e("ERROR", e.getMessage());
+            }
+        }).start();
 
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){

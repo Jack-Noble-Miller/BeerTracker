@@ -267,11 +267,15 @@ public class MainActivity extends AppCompatActivity {
                             while(rs.next()){
                                 SharedPreferences.Editor editor = sp.edit();
                                 editor.putBoolean("LB_RankByUnits", rs.getBoolean("LB_RankByUnits"));
-                                editor.putInt("APP_Version", rs.getInt("APP_Version"));
+                                editor.putFloat("APP_Version", rs.getFloat("APP_Version"));
                                 editor.putBoolean("APP_PromptToUpdate", rs.getBoolean("APP_PromptToUpdate"));
-                                editor.putInt("HI_ShowLastNum", rs.getInt("LB_RankByUnits"));
+                                editor.putInt("HI_ShowLastNum", rs.getInt("HI_ShowLastNum"));
                                 editor.putBoolean("OV_RankByUnits", rs.getBoolean("OV_RankByUnits"));
                                 editor.apply();
+
+                                if(sp.getFloat("APP_Version", 0)>Float.valueOf(getApplicationContext().getString(R.string.version)) && sp.getBoolean("APP_PromptToUpdate", true) ){
+                                    showToast("ASK JACK FOR A DAMN UPDATE FILE");
+                                }
                             }
                         }
                     }
