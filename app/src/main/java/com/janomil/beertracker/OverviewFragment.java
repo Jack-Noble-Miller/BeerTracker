@@ -34,6 +34,7 @@ public class OverviewFragment extends Fragment {
 
     SharedPreferences sp;
     FrameLayout frameLayout;
+    Boolean isAdmin;
 
     public OverviewFragment() {
         // Required empty public constructor
@@ -61,10 +62,12 @@ public class OverviewFragment extends Fragment {
 
     public void onClickAdminMode(View view){
         frameLayout = (FrameLayout) getView().findViewById(R.id.frameLayout);
+        if(isAdmin){
+            getFragmentManager().beginTransaction().replace(R.id.frameLayout, new AdminFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
 
-        getFragmentManager().beginTransaction().replace(R.id.frameLayout, new AdminFragment())
-                .addToBackStack(null)
-                .commit();
     }
 
     @Override
@@ -73,6 +76,7 @@ public class OverviewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
         ImageButton button = view.findViewById(R.id.imageButton2);
+        isAdmin = false;
         button.setOnClickListener(v -> onClickAdminMode(v));
         return view;
     }
@@ -105,7 +109,7 @@ public class OverviewFragment extends Fragment {
                 stmt.setInt(1,userID);
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
-                boolean isAdmin = rs.getBoolean("UserIsAdmin");
+                isAdmin = rs.getBoolean("UserIsAdmin");
                 ImageButton button = view.findViewById(R.id.imageButton2);
                 if(isAdmin){
                     button.setVisibility(View.VISIBLE);
