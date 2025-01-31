@@ -58,14 +58,20 @@ public class HistoryFragment extends Fragment {
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scrollView);
         LinearLayout linearLayout = (LinearLayout) scrollView.findViewById(R.id.linearLayout);
         LayoutInflater inflater = LayoutInflater.from(getContext());
-
+        sp = getActivity().getSharedPreferences("userID", Context.MODE_PRIVATE);
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
+                int showLastNum = sp.getInt("HI_ShowLastNum", 0);
                 String queryStr = "SELECT b.BeerName, b.BeerType, b.BeerColour From UserBeerLink ubl JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.UserID = ? ORDER BY ubl.Timestamp DESC";
-
+                if(showLastNum!=0 && showLastNum >= 1){
+                    queryStr += " LIMIT ?";
+                }
                 PreparedStatement stmt = con.prepareStatement(queryStr);
                 int userID =((MainActivity) getActivity()).getActingUserID();
                 stmt.setInt(1,userID);
+                if(showLastNum!=0 && showLastNum >= 1){
+                    stmt.setInt(2, showLastNum);
+                }
                 ResultSet rs = stmt.executeQuery();
                 while(rs.next()){
                     String beerName = rs.getString("BeerName");

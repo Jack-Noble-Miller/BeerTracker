@@ -60,9 +60,10 @@ public class BeerListFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout) scrollView.findViewById(R.id.linearLayout1);
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
+
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
-                String queryStr = "SELECT b.BeerName, b.BeerType, b.BeerColour From BeerData b";
+                String queryStr = "SELECT b.BeerName, b.BeerType, b.BeerColour From BeerData b ORDER BY b.BeerName";
 
                 PreparedStatement stmt = con.prepareStatement(queryStr);
                 ResultSet rs = stmt.executeQuery();

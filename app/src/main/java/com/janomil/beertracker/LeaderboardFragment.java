@@ -1,6 +1,7 @@
 package com.janomil.beertracker;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -138,7 +139,9 @@ public class LeaderboardFragment extends Fragment {
         String finalSelectedRbText = selectedRbText;
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
-                String queryStr = "SELECT ubl.UserID , u.UserNickname , ROUND(SUM(ubl.DrinkSizeMultiplier * COALESCE(b.BeerUnits, 1)), 2) AS Multiplier FROM UserBeerLink ubl JOIN UserData u ON ubl.userID = u.UserID JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.Timestamp >= NOW() - INTERVAL 1";
+                SharedPreferences sp = getActivity().getSharedPreferences("userID", Context.MODE_PRIVATE);
+                boolean rankByUnits = sp.getBoolean("LB_RankByUnits", true);
+                String queryStr = "SELECT ubl.UserID , u.UserNickname ,SUM(ubl.DrinkSizeMultiplier) as Multiplier, ROUND(SUM(ubl.DrinkSizeMultiplier * COALESCE(b.BeerUnits, 1)), 2) AS Units FROM UserBeerLink ubl JOIN UserData u ON ubl.userID = u.UserID JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.Timestamp >= NOW() - INTERVAL 1";
                 switch(finalSelectedRbText){
                     case "D":
                         queryStr += " DAY";
@@ -157,7 +160,13 @@ public class LeaderboardFragment extends Fragment {
                 if(beerTypeStr != "All"){
                     queryStr += " AND b.BeerType = ?";
                 }
-                queryStr +=  " GROUP BY UserID ORDER BY Multiplier DESC";
+                if(rankByUnits){
+                    queryStr +=  " GROUP BY UserID ORDER BY Units DESC";
+                }
+                else{
+                    queryStr +=  " GROUP BY UserID ORDER BY Multiplier DESC";
+                }
+
 
                 PreparedStatement stmt = con.prepareStatement(queryStr);
                 if(beerTypeStr != "All"){
@@ -168,7 +177,15 @@ public class LeaderboardFragment extends Fragment {
                 while(rs.next()){
                     int userID = rs.getInt("UserID");
                     String userNickname = rs.getString("UserNickname");
-                    Double multiplier = rs.getDouble("Multiplier");
+
+                    Double multiplier = 0.0;
+                    if(rankByUnits){
+                        multiplier = rs.getDouble("Units");
+                    }
+                    else{
+                        multiplier = rs.getDouble("Multiplier");
+                    }
+
                     String formattedText = "";
                     if(userNickname != null  && !userNickname.isEmpty()){
                         formattedText = (userNickname+"[" + String.valueOf(userID)+"]" + " ("+ multiplier + ")");

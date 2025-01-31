@@ -122,7 +122,16 @@ public class OverviewFragment extends Fragment {
 
         new Thread(()->{
             try(Connection con = DriverManager.getConnection(MainActivity.DB_URL, MainActivity.DB_USER, MainActivity.DB_PASSWORD)){
-                String queryStr = "SELECT b.BeerType, COUNT(*) AS EntryCount, COUNT(DISTINCT ubl.BeerID) AS DistinctBeerCount, SUM(ubl.DrinkSizeMultiplier) AS Multiplier FROM UserBeerLink ubl JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.UserID = ? GROUP BY b.BeerType ORDER BY Multiplier DESC LIMIT 3";
+                SharedPreferences sp = getActivity().getSharedPreferences("userID", Context.MODE_PRIVATE);
+                boolean rankByUnits = sp.getBoolean("OV_RankByUnits", true);
+                String queryStr = "";
+                if(rankByUnits){
+                    queryStr = "SELECT b.BeerType, COUNT(*) AS EntryCount, COUNT(DISTINCT ubl.BeerID) AS DistinctBeerCount, ROUND(SUM(ubl.DrinkSizeMultiplier * COALESCE(b.BeerUnits, 1)), 2) AS Multiplier FROM UserBeerLink ubl JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.UserID = ? GROUP BY b.BeerType ORDER BY Multiplier DESC LIMIT 3";
+                }
+                else{
+                    queryStr = "SELECT b.BeerType, COUNT(*) AS EntryCount, COUNT(DISTINCT ubl.BeerID) AS DistinctBeerCount, SUM(ubl.DrinkSizeMultiplier) AS Multiplier FROM UserBeerLink ubl JOIN BeerData b ON ubl.BeerID = b.BeerID WHERE ubl.UserID = ? GROUP BY b.BeerType ORDER BY Multiplier DESC LIMIT 3";
+                }
+
                 PreparedStatement stmt = con.prepareStatement(queryStr);
                 int userID =((MainActivity) getActivity()).getActingUserID();
                 stmt.setInt(1,userID);
